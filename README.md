@@ -1,22 +1,17 @@
-# IDEATONsexyguysTeam
-2024.07.01 인하대학교 컴퓨터공학과 아이디어톤 경진대회
-1.
-주제: 사회 보편적 문제를 해결하는 앱
-우리 조의 사회문제: 고령화와 치매
-치매 예방을 위한 뇌운동 앱,웹
+## Running React on Replit
 
-2.
-단계1 : 스트레칭 (박수치기, 어깨풀기, 안구운동)
-단계2: 기억력 (카드 짝 맞추기)
-단계3: 집중력 (숨은 그림 찾기)
-단계4: 사고력 (사고력 퀴즈)
-단계5: 언어력 (행맨, 스무고개)
+[React](https://reactjs.org/) is a popular JavaScript library for building user interfaces.
 
-다음 단계들이 하루에 한번씩 갱신된다.
-하루에 3번씩 5단계의 문제들을 풀 수 있고 문제를 5단계까지 다 풀면 포인트가 적립된다.
-포인트로는 건강식품, 음식 등 구매 가능
+[Vite](https://vitejs.dev/) is a blazing fast frontend build tool that includes features like Hot Module Reloading (HMR), optimized builds, and TypeScript support out of the box.
 
-기획: 김수호
-발표: 김수호
-프론트: 김수호, 박종원
-백: 김민지, 이정현
+Using the two in conjunction is one of the fastest ways to build a web app.
+
+### Getting Started
+- Hit run
+- Edit [App.jsx](#src/App.jsx) and watch it live update!
+
+By default, Replit runs the `dev` script, but you can configure it by changing the `run` field in the [configuration file](#.replit). Here are the vite docs for [serving production websites](https://vitejs.dev/guide/build.html)
+
+### Typescript
+
+Just rename any file from `.jsx` to `.tsx`. You can also try our [TypeScript Template](https://replit.com/@replit/React-TypeScript)
