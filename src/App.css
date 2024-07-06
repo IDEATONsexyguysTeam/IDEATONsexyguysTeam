@@ -209,3 +209,37 @@ body, html {
 .modal-content {
   padding: 20px;
 }
+/*카드 게임 구현 */
+.memory-game {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 10px;
+  width: 80%;
+  max-width: 600px;
+  margin: auto;
+}
+
+.card {
+  width: 100%;
+  padding-top: 100%; /* Aspect Ratio 1:1 */
+  position: relative;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.card img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit:
