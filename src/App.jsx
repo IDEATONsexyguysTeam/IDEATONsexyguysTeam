@@ -111,7 +111,6 @@ function HomeContent() {
   );
 }
 
-// 구매 콘텐츠 컴포넌트
 function PurchaseContent() {
   const [modalInfo, setModalInfo] = useState({ isOpen: false, title: '', content: '' });
 
@@ -127,16 +126,18 @@ function PurchaseContent() {
 
   return (
     <div className="product-container">
-      <div className="product-item larger" onClick={() => openModal('홍삼', '홍삼 내용')}>
+      <div className="product-item larger" onClick={() => openModal('홍삼', '홍삼 구매 정보')}>
         홍삼
       </div>
-      <div className="product-item larger" onClick={() => openModal('호박', '호박 내용')}>
+      <div className="product-item larger" onClick={() => openModal('호박', '호박 구매 정보')}>
         호박
       </div>
-      <div className="product-item larger" onClick={() => openModal('콩 세트', '콩 세트 내용')}>
+      <div className="product-item larger" onClick={() => openModal('콩 세트', '콩 세트 구매 정보')}>
         콩 세트
       </div>
-      {modalInfo.isOpen && <Modal title={modalInfo.title} content={modalInfo.content} closeModal={closeModal} />}
+      {modalInfo.isOpen && (
+        <Pmodal title={modalInfo.title} content={modalInfo.content} closeModal={closeModal} />
+      )}
     </div>
   );
 }
@@ -169,6 +170,25 @@ function Modal({ title, content, closeModal }) {
     </div>
   );
 }
+//구매 모달 컴포넌트
+const Pmodal = ({ title, content, closeModal }) => {
+  return (
+    <div className="pmodal-bg">
+      <div className="pmodal">
+        <div className="pmodal-header">
+          <h2>{title}</h2>
+          <span className="pclose" onClick={closeModal}>&times;</span>
+        </div>
+        <div className="pmodal-content">
+          <p>{content}</p>
+          <button className="purchase-button" onClick={() => alert(`${title}를 구매하였습니다!`)}>
+            구매
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // 카드 짝 맞추기 게임 컴포넌트
 function MemoryGame({ handleComplete }) {
@@ -176,6 +196,7 @@ function MemoryGame({ handleComplete }) {
   const [cards, setCards] = useState(shuffleArray([...images, ...images]));
   const [flippedCards, setFlippedCards] = useState([]);
   const [matchedCards, setMatchedCards] = useState([]);
+  const [cardsMatchedCount, setCardsMatchedCount] = useState(0);
 
   function shuffleArray(array) {
     return array.sort(() => Math.random() - 0.5);
@@ -193,10 +214,17 @@ function MemoryGame({ handleComplete }) {
       const [firstIndex, secondIndex] = newFlippedCards;
       if (cards[firstIndex] === cards[secondIndex]) {
         setMatchedCards([...matchedCards, cards[firstIndex]]);
+        setCardsMatchedCount(cardsMatchedCount + 2);
       }
       setTimeout(() => setFlippedCards([]), 1000);
     }
   };
+
+  useEffect(() => {
+    if (cardsMatchedCount === 8) {
+      alert('카드가 모두 맞춰졌습니다!');
+    }
+  }, [cardsMatchedCount]);
 
   return (
     <div className="memory-game">
