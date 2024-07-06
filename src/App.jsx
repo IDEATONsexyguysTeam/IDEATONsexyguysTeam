@@ -12,10 +12,21 @@ import axios from 'axios'; // Axios import
 
 function App() {
   const [activeMenu, setActiveMenu] = useState('홈');
+  const [userName, setUserName] = useState("");
 
   const handleMenuClick = (menu) => {
     setActiveMenu(menu);
   };
+  useEffect(() => {
+    // Fetching data from API on component mount
+    axios.get('/api/users')
+        .then(response => {
+          setUserName(response.data.name); // Assuming API returns an array of items [{ item_name, price, quantity }]
+        })
+        .catch(error => {
+          console.error('Error fetching items from API:', error);
+        });
+  }, []);
 
   return (
     <div className="container">
@@ -23,6 +34,7 @@ function App() {
         <img src={logo} className="logo" alt="Logo" />
         <h1>하루한번 뇌운동</h1>
       </header>
+      <span>어서오세요 {userName}님! </span>
       <div className="menu">
         <div
           className={`menu-item ${activeMenu === '홈' ? 'active' : ''}`}
@@ -78,21 +90,17 @@ function HomeContent() {
 
   const ConcentrationGameContent = () => <ConcentrationGame handleComplete={handleGameComplete} />;
   
-  const handleGameComplete = (gameType) => {
-    let postData = {};
+  const handleGameComplete = ({level, isClear}) => {
+      const postData = { level: level, isClear: isClear };
 
-    if (gameType === 'memory') {
-      postData = { level: 2, isClear: true };
-    } else if (gameType === 'concentration') {
-      postData = { level: 3, isClear: true };
-    }
 
+    console.log(postData.isClear, postData.level);
     axios.post('/api/games', postData)
       .then(response => {
         console.log('게임 완료 정보를 서버에 전송했습니다.');
       })
       .catch(error => {
-        console.error('게임 완료 정보를 서버에 전송하는 중 오류가 발생했습니다:', error);
+        console.error('게임 완료 정보를 서버에 전송하는 중 오류가 발생했습니다:', postData);
       });
   };
 
@@ -122,6 +130,7 @@ function HomeContent() {
 function PurchaseContent() {
   const [modalInfo, setModalInfo] = useState({ isOpen: false, title: '', content: '' });
   const [items, setItems] = useState([]);
+  const [item, setItem] = useState("");
 
   useEffect(() => {
     // Fetching data from API on component mount
@@ -136,6 +145,7 @@ function PurchaseContent() {
 
   const openModal = (itemName, price, quantity) => {
     const content = `${itemName} 구매 정보\n가격: ${price}원\n수량: ${quantity}`;
+    setItem(itemName);
     setModalInfo({ isOpen: true, title: itemName, content });
     document.body.style.overflow = 'hidden';
   };
@@ -148,12 +158,12 @@ function PurchaseContent() {
   return (
     <div className="product-container">
       {items.map((item, index) => (
-        <div key={index} className="product-item larger" onClick={() => openModal(item.item_name, item.price, item.quantity)}>
-          {item.item_name}
+        <div key={index} className="product-item larger" onClick={() => openModal(item.itemName, item.price, item.quantity)}>
+          {item.itemName}
         </div>
       ))}
       {modalInfo.isOpen && (
-        <Pmodal title={modalInfo.title} content={modalInfo.content} closeModal={closeModal} />
+        <Pmodal itemName={item} content={modalInfo.content} closeModal={closeModal} />
       )}
     </div>
   );
@@ -161,13 +171,49 @@ function PurchaseContent() {
 
 // 내정보 콘텐츠 컴포넌트
 function UserInfoContent() {
+  const [user, setUser] = useState();
+  const [userItems, setUserItems] = useState([]);
+
+  useEffect(() => {
+    // Fetching data from API on component mount
+    axios.get('/api/users')
+        .then(response => {
+          console.log(response.data);
+          setUser(response.data); // Assuming API returns an array of items [{ item_name, price, quantity }]
+        })
+        .catch(error => {
+          console.error('Error fetching items from API:', error);
+        });
+
+    axios.get('/api/users/items')
+        .then(response => {
+          setUserItems(response.data);
+        })
+  }, []);
+
+  const handleGoogleLogin = () => {
+    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+  };
+
   return (
-    <div className="user-info">
-      <button className="login-button google">
-        <img src={googleIcon} alt="Google Icon" className="google-icon" />
-        <span className="button-text">구글로 로그인</span>
-      </button>
-    </div>
+      <div className="user-info">
+        {!user ? (
+            <button className="login-button google" onClick={handleGoogleLogin}>
+              <img src={googleIcon} alt="Google Icon" className="google-icon" />
+              <span className="button-text">구글로 로그인</span>
+            </button>
+        ) : (
+            <div>
+              <h2>{user.name}님 안녕하세요!</h2>
+              <h3>총 포인트: {user.points}</h3>
+              <h3>오늘 완료한 레벨: {user.level}</h3>
+              <h3>{userItems.map((item) => (
+                  <div key={item.id}>
+                    {item.itemName} <span style={{color: 'gray', fontSize: 'small'}}>{item.buytime}</span>                  </div>
+              ))}</h3>
+            </div>
+        )}
+      </div>
   );
 }
 
@@ -191,7 +237,12 @@ function Modal({ title, content, closeModal }) {
 const Pmodal = ({ id, itemName, content, closeModal }) => {
 
   const handlePurchase = () => {
-    axios.post('/api/items', { id })
+    axios.post('/api/items', {
+      id: 0,
+      itemName:itemName,
+      price:0,
+      quantity: 0,
+      itemImg: ""})
       .then(response => {
         alert(`${itemName}를 구매하였습니다!`);
         console.log('구매 요청 성공:', response.data);
@@ -249,6 +300,7 @@ function MemoryGame({ handleComplete }) {
 
   useEffect(() => {
     if (cardsMatchedCount === 8) {
+      handleComplete({ level: 2, isClear: true });
       alert('카드가 모두 맞춰졌습니다!');
     }
   }, [cardsMatchedCount]);
@@ -275,7 +327,7 @@ function MemoryGame({ handleComplete }) {
 }
 
 //집중력게임 컴포넌트
-function ConcentrationGame() {
+function ConcentrationGame({handleComplete}) {
   const [cards, setCards] = useState([
     { id: 1, number: 1, isFlipped: false }, // 각 카드는 숫자와 뒤집힌 상태를 가짐
     { id: 2, number: 2, isFlipped: false },
@@ -317,6 +369,7 @@ function ConcentrationGame() {
 
       // 모든 카드를 맞췄을 때
       if (correctSequence === 8) {
+        handleComplete({ level: 3, isClear: true });
         alert('모든 카드를 맞추셨습니다!');
         shuffleCards(); // 새로운 게임을 위해 카드 다시 섞기
         setCorrectSequence(1); // 올바른 순서 초기화
