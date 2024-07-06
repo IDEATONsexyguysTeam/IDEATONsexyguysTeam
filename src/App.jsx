@@ -67,12 +67,19 @@ function HomeContent() {
     document.body.style.overflow = 'auto';
   };
 
-  const StretchingContent = () => (
-    <div>
-      <img src={neckImage} alt="Neck Stretch" className="stretch-image" />
-      <button className="next-button" onClick={closeModal}>다음</button>
-    </div>
-  );
+  const StretchingContent = ({ handleGameComplete }) => {
+    const handleNext = () => {
+      handleGameComplete('stretching');
+      closeModal();
+    };
+
+    return (
+      <div>
+        <img src={neckImage} alt="Neck Stretch" className="stretch-image" />
+        <button className="next-button" onClick={handleNext}>다음</button>
+      </div>
+    );
+  };
 
   const MemoryGameContent = () => <MemoryGame handleComplete={handleGameComplete} />;
 
@@ -85,6 +92,8 @@ function HomeContent() {
       postData = { level: 2, isClear: true };
     } else if (gameType === 'concentration') {
       postData = { level: 3, isClear: true };
+    } else if (gameType === 'stretching') {
+      postData = { level: 1, isClear: true };
     }
 
     axios.post('/api/games', postData)
@@ -191,7 +200,7 @@ function Modal({ title, content, closeModal }) {
 const Pmodal = ({ id, itemName, content, closeModal }) => {
 
   const handlePurchase = () => {
-    axios.post('/api/items', { id })
+    axios.post('/api/items', { itemName })
       .then(response => {
         alert(`${itemName}를 구매하였습니다!`);
         console.log('구매 요청 성공:', response.data);
