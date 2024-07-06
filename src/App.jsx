@@ -118,11 +118,25 @@ function HomeContent() {
   );
 }
 
+//구매
 function PurchaseContent() {
   const [modalInfo, setModalInfo] = useState({ isOpen: false, title: '', content: '' });
+  const [items, setItems] = useState([]);
 
-  const openModal = (title, content) => {
-    setModalInfo({ isOpen: true, title, content });
+  useEffect(() => {
+    // Fetching data from API on component mount
+    axios.get('/api/items')
+      .then(response => {
+        setItems(response.data); // Assuming API returns an array of items [{ item_name, price, quantity }]
+      })
+      .catch(error => {
+        console.error('Error fetching items from API:', error);
+      });
+  }, []);
+
+  const openModal = (itemName, price, quantity) => {
+    const content = `${itemName} 구매 정보\n가격: ${price}원\n수량: ${quantity}`;
+    setModalInfo({ isOpen: true, title: itemName, content });
     document.body.style.overflow = 'hidden';
   };
 
@@ -133,15 +147,11 @@ function PurchaseContent() {
 
   return (
     <div className="product-container">
-      <div className="product-item larger" onClick={() => openModal('홍삼', '홍삼 구매 정보')}>
-        홍삼
-      </div>
-      <div className="product-item larger" onClick={() => openModal('호박', '호박 구매 정보')}>
-        호박
-      </div>
-      <div className="product-item larger" onClick={() => openModal('콩 세트', '콩 세트 구매 정보')}>
-        콩 세트
-      </div>
+      {items.map((item, index) => (
+        <div key={index} className="product-item larger" onClick={() => openModal(item.item_name, item.price, item.quantity)}>
+          {item.item_name}
+        </div>
+      ))}
       {modalInfo.isOpen && (
         <Pmodal title={modalInfo.title} content={modalInfo.content} closeModal={closeModal} />
       )}
@@ -178,19 +188,29 @@ function Modal({ title, content, closeModal }) {
   );
 }
 //구매 모달 컴포넌트
-const Pmodal = ({ title, content, closeModal }) => {
+const Pmodal = ({ id, itemName, content, closeModal }) => {
+
+  const handlePurchase = () => {
+    axios.post('/api/items', { id })
+      .then(response => {
+        alert(`${itemName}를 구매하였습니다!`);
+        console.log('구매 요청 성공:', response.data);
+      })
+      .catch(error => {
+        console.error('구매 요청 중 오류 발생:', error);
+      });
+  };
+
   return (
-    <div className="pmodal-bg">
-      <div className="pmodal">
-        <div className="pmodal-header">
-          <h2>{title}</h2>
-          <span className="pclose" onClick={closeModal}>&times;</span>
+    <div className="modal-bg">
+      <div className="modal">
+        <div className="modal-header">
+          <h2>{itemName}</h2>
+          <span className="close" onClick={closeModal}>&times;</span>
         </div>
-        <div className="pmodal-content">
+        <div className="modal-content">
           <p>{content}</p>
-          <button className="purchase-button" onClick={() => alert(`${title}를 구매하였습니다!`)}>
-            구매
-          </button>
+          <button className="purchase-button" onClick={handlePurchase}>구매</button>
         </div>
       </div>
     </div>
