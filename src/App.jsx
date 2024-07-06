@@ -78,9 +78,16 @@ function HomeContent() {
 
   const ConcentrationGameContent = () => <ConcentrationGame handleComplete={handleGameComplete} />;
   
-  const handleGameComplete = () => {
-    // 게임이 완료되면 서버에 POST 요청을 보냄
-    axios.post('/api/games', { gameType: 'memory' })
+  const handleGameComplete = (gameType) => {
+    let postData = {};
+
+    if (gameType === 'memory') {
+      postData = { level: 2, isClear: true };
+    } else if (gameType === 'concentration') {
+      postData = { level: 3, isClear: true };
+    }
+
+    axios.post('/api/games', postData)
       .then(response => {
         console.log('게임 완료 정보를 서버에 전송했습니다.');
       })
@@ -247,6 +254,7 @@ function MemoryGame({ handleComplete }) {
   );
 }
 
+//집중력게임 컴포넌트
 function ConcentrationGame() {
   const [cards, setCards] = useState([
     { id: 1, number: 1, isFlipped: false }, // 각 카드는 숫자와 뒤집힌 상태를 가짐
