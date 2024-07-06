@@ -132,34 +132,33 @@ body, html {
 /* 유저 정보 스타일 */
 .user-info {
   display: flex;
-  flex-direction: column; /* 세로 배치 */
-  align-items: center; /* 가운데 정렬 */
-  gap: 20px; /* 간격 설정 */
+  justify-content: center; /* 버튼을 오른쪽으로 정렬 */
+  align-items: center; /* 세로 가운데 정렬 */
 }
 
-.user-info input {
-  width: 90%;
-  height: 40px; /* 높이 설정 */
-  padding: 10px; /* 안쪽 여백 */
-  border: 1px solid #ccc; /* 테두리 설정 */
-  border-radius: 5px; /* 모서리 반경 */
-  font-size: 1em; /* 글꼴 크기 */
-}
-
-.user-info button {
-  width: 90%;
-  height: 40px; /* 높이 설정 */
-  background-color: #007bff; /* 배경색 */
+.user-info .login-button {
+  background-color: #4285f4; /* 구글 색상 */
   color: white; /* 글꼴 색상 */
   border: none; /* 테두리 없음 */
   border-radius: 5px; /* 모서리 반경 */
-  font-size: 1.2em; /* 글꼴 크기 */
+  padding: 10px 20px; /* 내부 여백 */
+  display: flex; /* 내부 요소를 행으로 배치 */
+  align-items: center; /* 세로 가운데 정렬 */
   cursor: pointer; /* 커서 포인터 */
   transition: background-color 0.3s; /* 배경색 전환 애니메이션 */
 }
 
-.user-info button:hover {
-  background-color: #0056b3; /* 마우스 오버 시 배경색 */
+.user-info .login-button:hover {
+  background-color: #357ae8; /* 구글 색상 마우스 오버 시 */
+}
+
+.user-info .google-icon {
+  width: 20px; /* 아이콘 너비 */
+  margin-right: 10px; /* 아이콘 오른쪽 여백 */
+}
+
+.user-info .button-text {
+  font-size: 1.2em; /* 버튼 텍스트 크기 */
 }
 
 /* 모달 관련 스타일 */
@@ -211,3 +210,37 @@ body, html {
 .modal-content {
   padding: 20px;
 }
+/*카드 게임 구현 */
+.memory-game {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 10px;
+  width: 80%;
+  max-width: 600px;
+  margin: auto;
+}
+
+.card {
+  width: 100%;
+  padding-top: 100%; /* Aspect Ratio 1:1 */
+  position: relative;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.card img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit:
